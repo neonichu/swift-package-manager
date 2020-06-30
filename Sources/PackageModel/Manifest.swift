@@ -179,8 +179,13 @@ extension Manifest {
             case .everything:
                 return self.targets
             case .specific(let productFilter):
-                let products = self.products.filter { productFilter.contains($0.name) }
-                targets = targetsRequired(for: products)
+                // We can skip computing the filtered target list if pre-5.2 is being used.
+                if toolsVersion < ToolsVersion.v5_2 {
+                    return self.targets
+                } else {
+                    let products = self.products.filter { productFilter.contains($0.name) }
+                    targets = targetsRequired(for: products)
+                }
             }
 
             _requiredTargets[productFilter] = targets
