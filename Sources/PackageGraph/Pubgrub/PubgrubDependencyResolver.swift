@@ -1073,8 +1073,8 @@ private final class PubGrubPackageContainer {
     /// incompatibilities emitted.
     private var emittedIncompatibilities = ThreadSafeKeyValueStore<PackageReference, VersionSetSpecifier>()
 
-    /// Whether we've emitted the incompatibilities for the pinned versions.
-    private var emittedPinnedVersionIncompatibilities = ThreadSafeBox(false)
+    /// Product filter we've emitted the incompatibilities for the pinned versions for.
+    private var emittedPinnedVersionIncompatibilities = ThreadSafeBox(ProductFilter.nothing)
 
     init(underlying: PackageContainer, pinsMap: PinsStore.PinsMap, queue: DispatchQueue) {
         self.underlying = underlying
@@ -1228,13 +1228,15 @@ private final class PubGrubPackageContainer {
 
         // Emit the dependencies at the pinned version if we haven't emitted anything else yet.
         if version == pinnedVersion, emittedIncompatibilities.isEmpty {
+            guard let filter = self.emittedPinnedVersionIncompatibilities.get() else { return [] }
+            
             // We don't need to emit anything if we already emitted the incompatibilities at the
-            // pinned version.
-            if self.emittedPinnedVersionIncompatibilities.get() ?? false {
+            // pinned version for the same product filter.
+            if filter.contains(node.productFilter) {
                 return []
             }
-
-            self.emittedPinnedVersionIncompatibilities.put(true)
+            
+            self.emittedPinnedVersionIncompatibilities.put(filter.union(node.productFilter))
 
             // Since the pinned version is most likely to succeed, we don't compute bounds for its
             // incompatibilities.

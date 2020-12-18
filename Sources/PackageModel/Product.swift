@@ -118,6 +118,20 @@ public enum ProductFilter: Equatable, Hashable {
             return set.contains(product)
         }
     }
+    
+    public func contains(_ productFilter: ProductFilter) -> Bool {
+        switch self {
+        case .everything:
+            return true
+        case .specific(let set):
+            switch productFilter {
+            case .everything:
+                return false
+            case .specific(let otherSet):
+                return otherSet.isSubset(of: set)
+            }
+        }
+    }
 }
 
 

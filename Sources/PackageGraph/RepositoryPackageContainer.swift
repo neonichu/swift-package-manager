@@ -222,7 +222,6 @@ public class RepositoryPackageContainer: PackageContainer, CustomStringConvertib
         productFilter: ProductFilter
     ) throws -> (Manifest, [Constraint]) {
         let manifest = try self.loadManifest(at: revision, version: version)
-        let productFilter = manifest.toolsVersion < ToolsVersion.v5_2 ? ProductFilter.everything : productFilter
         return (manifest, manifest.dependencyConstraints(productFilter: productFilter, mirrors: mirrors))
     }
 
