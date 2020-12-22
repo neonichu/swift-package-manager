@@ -428,7 +428,28 @@ public struct PubgrubDependencyResolver {
         var rootIncompatibilities: [Incompatibility] = []
         for (node, constraints) in versionBasedDependencies {
             for constraint in constraints {
-                if overriddenPackages.keys.contains(constraint.node.package) { continue }
+                if overriddenPackages.keys.contains(constraint.node.package) {
+                    guard let container = try? temp_await({ provider.getContainer(for: constraint.node.package, completion: $0) }) else { continue }
+                    // FIXME: this is wrong, we need the tools version of the client of `constraint.node.package`
+                    guard let toolsVersion = try? container.underlying.toolsVersion(for: Version("1.0.0")) else { continue }
+                    guard toolsVersion >= .v5_2 else { continue }
+                    let containerProducts = (try? container.underlying.getProducts()) ?? []
+                    if case .specific(let products) = constraint.node.productFilter, !products.isSubset(of: Set(containerProducts.map({ $0.name }))) {
+                        func format(_ reference: PackageReference) -> String {
+                            switch reference.kind {
+                            case .local:
+                                return "local package at \(reference.path)"
+                            case .root:
+                                return "root package at \(reference.path)"
+                            case .remote:
+                                return "remote package \(reference.path)"
+                            }
+                        }
+                        
+                        throw PubgrubError.unresolvable("\(format(container.package)) and \(format(constraint.node.package)) have the same last-path component which is not allowed")
+                    }
+                    continue
+                }
 
                 let incompat = try Incompatibility(
                     Term(root, .exact("1.0.0")),

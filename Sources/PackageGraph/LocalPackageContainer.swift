@@ -53,6 +53,10 @@ public class LocalPackageContainer: PackageContainer {
             fileSystem: fs)
         return _manifest!
     }
+    
+    public func getProducts() throws -> [ProductDescription] {
+        return try loadManifest().products
+    }
 
     public func getUnversionedDependencies(productFilter: ProductFilter) throws -> [PackageContainerConstraint] {
         return try loadManifest().dependencyConstraints(productFilter: productFilter, mirrors: mirrors)
@@ -86,7 +90,7 @@ public class LocalPackageContainer: PackageContainer {
     }
     
     public func toolsVersion(for version: Version) throws -> ToolsVersion {
-        fatalError("This should never be called")
+        return try loadManifest().toolsVersion
     }
     
     public func toolsVersionsAppropriateVersionsDescending() throws -> [Version] {

@@ -45,6 +45,10 @@ public class MockPackageContainer: PackageContainer {
     public func versionsAscending() throws -> [Version] {
         return _versions
     }
+    
+    public func getProducts() throws -> [ProductDescription] {
+        return []
+    }
 
     public func getDependencies(at version: Version, productFilter: ProductFilter) -> [MockPackageContainer.Constraint] {
         requestedVersions.insert(version)

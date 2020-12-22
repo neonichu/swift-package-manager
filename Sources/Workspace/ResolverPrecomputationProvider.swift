@@ -135,11 +135,15 @@ private struct LocalPackageContainer: PackageContainer {
     }
     
     func toolsVersion(for version: Version) throws -> ToolsVersion {
-        return currentToolsVersion
+        return manifest.toolsVersion
     }
 
     func toolsVersionsAppropriateVersionsDescending() throws -> [Version] {
         return try self.versionsDescending()
+    }
+    
+    func getProducts() throws -> [ProductDescription] {
+        return manifest.products
     }
 
     func getDependencies(at version: Version, productFilter: ProductFilter) throws -> [PackageContainerConstraint] {

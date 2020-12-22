@@ -125,6 +125,10 @@ public class RepositoryPackageContainer: PackageContainer, CustomStringConvertib
             return isValid
         })
     }
+    
+    public func getProducts() throws -> [ProductDescription] {
+        return []
+    }
 
     public func getTag(for version: Version) -> String? {
         return try? self.knownVersions()[version]

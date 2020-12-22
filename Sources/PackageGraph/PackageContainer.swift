@@ -97,6 +97,8 @@ public protocol PackageContainer {
     /// after the container is available. The updated identifier is returned in result of the
     /// dependency resolution.
     func getUpdatedIdentifier(at boundVersion: BoundVersion) throws -> PackageReference
+    
+    func getProducts() throws -> [ProductDescription]
 }
 
 extension PackageContainer {

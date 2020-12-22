@@ -1959,6 +1959,10 @@ public class MockContainer: PackageContainer {
         }
         return version
     }
+    
+    public func getProducts() throws -> [ProductDescription] {
+        return []
+    }
 
     public func getDependencies(at version: Version, productFilter: ProductFilter) throws -> [PackageContainerConstraint] {
         return try getDependencies(at: version.description, productFilter: productFilter)
